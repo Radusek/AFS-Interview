@@ -17,6 +17,8 @@
         private float speed;
         private Vector3 target;
 
+        public Vector3 Velocity => speed * (target - transform.position).normalized;
+
         public void Initialize(Vector2 boundsMin, Vector2 boundsMax)
         {
             this.boundsMin = boundsMin;
@@ -34,9 +36,7 @@
 
         private void Update()
         {
-            var direction = (target - transform.position).normalized;
-
-            transform.position += direction * speed * Time.deltaTime;
+            transform.position += Time.deltaTime * Velocity;
             if ((transform.position - target).magnitude <= 0.1f)
                 SetTarget();
         }

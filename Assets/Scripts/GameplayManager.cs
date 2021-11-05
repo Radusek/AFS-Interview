@@ -8,7 +8,8 @@
     {
         [Header("Prefabs")] 
         [SerializeField] private GameObject enemyPrefab;
-        [SerializeField] private GameObject towerPrefab;
+        [SerializeField] private GameObject simpleTowerPrefab;
+        [SerializeField] private GameObject burstTowerPrefab;
 
         [Header("Settings")] 
         [SerializeField] private Vector2 boundsMin;
@@ -25,7 +26,6 @@
         private int lastScore;
         private int lastEnemiesCount;
         private new Camera camera;
-        private int groundMask;
         private TextMeshProUGUI scoreTextComponent;
         private TextMeshProUGUI enemiesCountTextComponent;
 
@@ -33,7 +33,6 @@
         {
             enemies = new List<Enemy>();
             camera = Camera.main;
-            groundMask = LayerMask.GetMask("Ground");
             scoreTextComponent = scoreText.GetComponent<TextMeshProUGUI>();
             enemiesCountTextComponent = enemiesCountText.GetComponent<TextMeshProUGUI>();
         }
@@ -46,16 +45,17 @@
                 nextEnemySpawnTime = Time.time + enemySpawnRate;
             }
 
-            if (Input.GetMouseButtonDown(0))
+            if (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1))
             {
                 var ray = camera.ScreenPointToRay(Input.mousePosition);
 
-                if (Physics.Raycast(ray, out var hit, groundMask))
+                if (Physics.Raycast(ray, out var hit, Utils.GroundMask))
                 {
                     var spawnPosition = hit.point;
-                    spawnPosition.y = towerPrefab.transform.position.y;
+                    spawnPosition.y = simpleTowerPrefab.transform.position.y;
 
-                    SpawnTower(spawnPosition);
+                    var towerToSpawn = Input.GetMouseButtonDown(0) ? simpleTowerPrefab : burstTowerPrefab;
+                    SpawnTower(towerToSpawn, spawnPosition);
                 }
             }
 
@@ -90,9 +90,9 @@
             score++;
         }
 
-        private void SpawnTower(Vector3 position)
+        private void SpawnTower(GameObject towerPrefab, Vector3 position)
         {
-            var tower = Instantiate(towerPrefab, position, Quaternion.identity).GetComponent<SimpleTower>();
+            var tower = Instantiate(towerPrefab, position, Quaternion.identity).GetComponent<Tower>();
             tower.Initialize(enemies);
         }
     }
