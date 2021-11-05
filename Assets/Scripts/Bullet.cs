@@ -15,6 +15,12 @@
 
         private void Update()
         {
+            if (!targetObject)
+            {
+                Destroy(gameObject);
+                return;
+            }
+        
             var direction = (targetObject.transform.position - transform.position).normalized;
 
             transform.position += direction * speed * Time.deltaTime;
