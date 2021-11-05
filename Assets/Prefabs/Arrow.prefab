@@ -89,7 +89,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6272148020058483619}
   - component: {fileID: 1195161708583989081}
-  - component: {fileID: 1812808277484944457}
+  - component: {fileID: 2082030694511803704}
   - component: {fileID: 3687352233613811078}
   - component: {fileID: 6370307574555674103}
   m_Layer: 0
@@ -130,7 +130,7 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!135 &1812808277484944457
+--- !u!135 &2082030694511803704
 SphereCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -141,7 +141,7 @@ SphereCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.2
+  m_Radius: 0.25
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &3687352233613811078
 MonoBehaviour:
@@ -155,7 +155,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 804361bd04cb21442aecc1de3b2d901d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 5
+  speed: 10
 --- !u!114 &6370307574555674103
 MonoBehaviour:
   m_ObjectHideFlags: 0
