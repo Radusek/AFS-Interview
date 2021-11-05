@@ -17,6 +17,8 @@
         {
             if (!targetObject)
             {
+                // could have alternatively pick the nearest enemy alive if such exists and set it as the new target
+                // instead of destroying the projectile but I decided to keep it simple
                 Destroy(gameObject);
                 return;
             }

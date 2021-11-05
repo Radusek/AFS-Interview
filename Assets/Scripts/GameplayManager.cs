@@ -39,6 +39,7 @@
 
         private void Update()
         {
+            // simplifying timer logic (minor optimization)
             if (Time.time >= nextEnemySpawnTime)
             {
                 SpawnEnemy();
@@ -47,8 +48,10 @@
 
             if (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1))
             {
+                // caching Camera.main since it's not being cached by default in this Unity version
                 var ray = camera.ScreenPointToRay(Input.mousePosition);
 
+                // having ground layer mask cached
                 if (Physics.Raycast(ray, out var hit, Utils.GroundMask))
                 {
                     var spawnPosition = hit.point;
@@ -59,8 +62,11 @@
                 }
             }
 
+            // avoiding GC allocation for new strings whenever possible
             if (score != lastScore)
             {
+                // having component references cached instead of calling GetComponent<>()
+                // got rid of string concatenation that used '+' operator
                 scoreTextComponent.SetText("Score: {0}", score);
                 lastScore = score;
             }
