@@ -20,29 +20,37 @@
         [SerializeField] private GameObject scoreText;
         
         private List<Enemy> enemies;
-        private float enemySpawnTimer;
+        private float nextEnemySpawnTime;
         private int score;
+        private int lastScore;
+        private int lastEnemiesCount;
+        private new Camera camera;
+        private int groundMask;
+        private TextMeshProUGUI scoreTextComponent;
+        private TextMeshProUGUI enemiesCountTextComponent;
 
         private void Awake()
         {
             enemies = new List<Enemy>();
+            camera = Camera.main;
+            groundMask = LayerMask.GetMask("Ground");
+            scoreTextComponent = scoreText.GetComponent<TextMeshProUGUI>();
+            enemiesCountTextComponent = enemiesCountText.GetComponent<TextMeshProUGUI>();
         }
 
         private void Update()
         {
-            enemySpawnTimer -= Time.deltaTime;
-
-            if (enemySpawnTimer <= 0f)
+            if (Time.time >= nextEnemySpawnTime)
             {
                 SpawnEnemy();
-                enemySpawnTimer = enemySpawnRate;
+                nextEnemySpawnTime = Time.time + enemySpawnRate;
             }
 
             if (Input.GetMouseButtonDown(0))
             {
-                var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                var ray = camera.ScreenPointToRay(Input.mousePosition);
 
-                if (Physics.Raycast(ray, out var hit, LayerMask.GetMask("Ground")))
+                if (Physics.Raycast(ray, out var hit, groundMask))
                 {
                     var spawnPosition = hit.point;
                     spawnPosition.y = towerPrefab.transform.position.y;
@@ -51,8 +59,18 @@
                 }
             }
 
-            scoreText.GetComponent<TextMeshProUGUI>().text = "Score: " + score;
-            enemiesCountText.GetComponent<TextMeshProUGUI>().text = "Enemies: " + enemies.Count;
+            if (score != lastScore)
+            {
+                scoreTextComponent.SetText("Score: {0}", score);
+                lastScore = score;
+            }
+
+            int enemiesCount = enemies.Count;
+            if (enemiesCount != lastEnemiesCount)
+            {
+                enemiesCountTextComponent.SetText("Enemies: {0}", enemiesCount);
+                lastEnemiesCount = enemiesCount;
+            }
         }
 
         private void SpawnEnemy()
