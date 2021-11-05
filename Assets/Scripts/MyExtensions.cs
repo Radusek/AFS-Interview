@@ -5,6 +5,6 @@
     public static class Utils
     {
         public static bool IsLayerInMask(this int thisLayer, int layerMask) => (1 << thisLayer & layerMask) != 0;
-        public static int GroundMask => LayerMask.GetMask("Ground");
+        public static readonly int GroundMask = LayerMask.GetMask("Ground");
     }
 }
