@@ -16,16 +16,20 @@
             var targetVelocity = target.GetComponent<Enemy>().Velocity;
             var firePoint = transform.position;
 
-            var distance = Vector3.Distance(firePoint, targetPos);
             var interceptionPoint = FirstOrderIntercept(firePoint, Vector3.zero, speed, targetPos, targetVelocity);
+            var horizontalDistance = Vector3.Distance(firePoint.ResetY(), interceptionPoint.ResetY());
+            var heightDifference = interceptionPoint.y - firePoint.y;
             
-            if (CalculateTrajectory(distance, speed, out var trajectoryAngle))
+            var shootingDirection = (interceptionPoint - firePoint).ResetY().normalized;
+            if (!CalculateTrajectory(horizontalDistance, heightDifference, speed, out var trajectoryAngle))
             {
-                float trajectoryHeight = Mathf.Tan(trajectoryAngle * Mathf.Deg2Rad) * distance;
-                interceptionPoint.y += trajectoryHeight;
+                // projectile's speed isn't enough to reach the target
+                Destroy(gameObject);
+                return;
             }
-
-            var shootingDirection = (interceptionPoint - firePoint).normalized;
+            
+            Vector3 targetVector = trajectoryAngle < 0f ? Vector3.down : Vector3.up;
+            shootingDirection = Vector3.Slerp(shootingDirection, targetVector, Mathf.Abs(trajectoryAngle) / 90f);
             GetComponent<Rigidbody>().velocity = speed * shootingDirection;
         }
         
@@ -97,10 +101,20 @@
             return Mathf.Max(-b/(2f*a), 0f); //don't shoot back in time
         }
         
-        public static bool CalculateTrajectory(float targetDistance, float projectileVelocity, out float calculatedAngle)
+        public static bool CalculateTrajectory(float horizontalDistance, float heightDifference, float projectileVelocity, out float calculatedAngle)
         {
-            calculatedAngle = 0.5f * (Mathf.Asin ((-Physics.gravity.y * targetDistance) / (projectileVelocity * projectileVelocity)) * Mathf.Rad2Deg);
-            if(float.IsNaN(calculatedAngle))
+            float gravity = -Physics.gravity.y;
+            float velocitySqr = projectileVelocity * projectileVelocity;
+
+            float sqrt = Mathf.Sqrt(velocitySqr * velocitySqr - gravity * (gravity * horizontalDistance * horizontalDistance + 2 * heightDifference * velocitySqr));
+            
+            float numeratorA = velocitySqr + sqrt;
+            float numeratorB = velocitySqr - sqrt;
+            
+            float denominator = gravity * horizontalDistance;
+            
+            calculatedAngle = Mathf.Atan(numeratorB / denominator) * Mathf.Rad2Deg;
+            if (float.IsNaN(calculatedAngle))
             {
                 calculatedAngle = 0;
                 return false;
