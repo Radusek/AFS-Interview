@@ -23,7 +23,10 @@
             {
                 var nextTarget = i == 0 ? target : FindTargetEnemy();
                 if (!nextTarget)
+                {
+                    shotTargets.Clear();
                     yield break;
+                }
                 
                 shotTargets.Add(nextTarget);
                 base.Attack(nextTarget);
